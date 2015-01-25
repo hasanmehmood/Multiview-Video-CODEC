@@ -14,7 +14,6 @@ struct motionVectors mv_for_prev[(HEIGHT*WIDTH)/(BLOCK_H*BLOCK_W)];
 struct motionVectors mv_for_next[(HEIGHT*WIDTH)/(BLOCK_H*BLOCK_W)];
 struct motionVectors mv_for_save[(HEIGHT*WIDTH)/(BLOCK_H*BLOCK_W)];
 
-
 int sad_p[HEIGHT*WIDTH/(BLOCK_W*BLOCK_H)];
 int sad_n[HEIGHT*WIDTH/(BLOCK_W*BLOCK_H)];
 
@@ -24,12 +23,14 @@ int finding_motion_vectors(char *left_video, char *right_video)
 	FILE *fr;
 	FILE *fw;
 	FILE *fr1;
+	
 	fr = fopen(left_video,"rb");
 	if(fr==NULL){
 		printf("Failed to open");
 		getch();
 		return 0;
 	}
+	
 	fr1 = fopen(right_video,"rb");
 	if(fr1==NULL){
 		printf("Failed to open");
@@ -88,12 +89,6 @@ int finding_motion_vectors(char *left_video, char *right_video)
 	unsigned char *p2_U = (unsigned char*)malloc((HEIGHT*WIDTH>>2)*sizeof(unsigned char));
 	unsigned char *p2_V = (unsigned char*)malloc((HEIGHT*WIDTH>>2)*sizeof(unsigned char));
 	
-
-
-
-
-	
-
 	for(int no=0; no<(FRAMES/5); no++){
 		
 		fread(cur_frame, sizeof(unsigned char), HEIGHT*WIDTH, fr);
@@ -122,9 +117,7 @@ int finding_motion_vectors(char *left_video, char *right_video)
 		
 		fwrite(cur_frame4, sizeof(unsigned char), HEIGHT*WIDTH, fw);
 		fwrite(U4, sizeof(unsigned char), (HEIGHT*WIDTH>>2), fw);
-		fwrite(V4, sizeof(unsigned char), (HEIGHT*WIDTH>>2), fw);
-		
-		
+		fwrite(V4, sizeof(unsigned char), (HEIGHT*WIDTH>>2), fw);	
 
 		full_search(cur_frame, cur_frame2, mv_for_prev, sad_p);
 		full_search(cur_frame4, cur_frame2, mv_for_next, sad_n);
@@ -133,10 +126,8 @@ int finding_motion_vectors(char *left_video, char *right_video)
 		fwrite(mv_for_save, sizeof(struct motionVectors), ((HEIGHT*WIDTH)/(BLOCK_H*BLOCK_W)), fw);
 		fwrite(U2, sizeof(unsigned char), (HEIGHT*WIDTH>>2), fw);
 		fwrite(V2, sizeof(unsigned char), (HEIGHT*WIDTH>>2), fw);
-		
 
 		predictBiFrame(cur_frame, cur_frame4, p_frame, mv_for_save);
-
 		full_search(cur_frame, cur_frame1, mv_for_prev, sad_p);
 		full_search(p_frame, cur_frame1, mv_for_next, sad_n);
 		compare(mv_for_save);
@@ -232,10 +223,6 @@ int finding_motion_vectors(char *left_video, char *right_video)
 	return 0;
 }
 
-
-
-
-
 int reconstruct_frames()
 {
 	#pragma warning (disable : 4996);
@@ -244,7 +231,6 @@ int reconstruct_frames()
 	FILE *fw;
 	FILE *fr1;
 
-	
 	fr = fopen("raw_1.yuv","rb");
 	if(fr==NULL){
 		printf("Failed to open");
@@ -259,7 +245,6 @@ int reconstruct_frames()
 		return 0;
 	}
 	
-
 	FILE *fw1 = fopen("p_right.yuv", "wb");
 	if(fw1==NULL){
 		printf("Failed to open");
@@ -267,7 +252,6 @@ int reconstruct_frames()
 		return 0;
 	}
 	
-
 	unsigned char *cur_frame = (unsigned char*)malloc(HEIGHT*WIDTH*sizeof(unsigned char));
 	unsigned char *U = (unsigned char*)malloc((HEIGHT*WIDTH>>2)*sizeof(unsigned char));
 	unsigned char *V = (unsigned char*)malloc((HEIGHT*WIDTH>>2)*sizeof(unsigned char));
@@ -300,12 +284,6 @@ int reconstruct_frames()
 	unsigned char *p2_U = (unsigned char*)malloc((HEIGHT*WIDTH>>2)*sizeof(unsigned char));
 	unsigned char *p2_V = (unsigned char*)malloc((HEIGHT*WIDTH>>2)*sizeof(unsigned char));
 	
-
-
-
-
-	
-
 	for(int no=0; no<(FRAMES/5); no++){
 		
 		fread(cur_frame, sizeof(unsigned char), HEIGHT*WIDTH, fr);
@@ -403,8 +381,7 @@ int reconstruct_frames()
 		
 		fwrite(p2_frame, sizeof(unsigned char), HEIGHT*WIDTH, fw1);
 		fwrite(U4, sizeof(unsigned char), (HEIGHT*WIDTH>>2), fw1);
-		fwrite(V4, sizeof(unsigned char), (HEIGHT*WIDTH>>2), fw1);
-		
+		fwrite(V4, sizeof(unsigned char), (HEIGHT*WIDTH>>2), fw1);	
 
 		//prev = next;
 		cout<<"Encoded GOP No: "<<no<<endl;
@@ -416,13 +393,9 @@ int reconstruct_frames()
 	free(V);
 	fclose(fr);
 	fclose(fw);
-
 	getch();
 	return 0;
 }
-
-
-
 
 void full_search(unsigned char *pre, unsigned char *cur, motionVectors mv[HEIGHT*WIDTH/(BLOCK_H*BLOCK_W)], int sad_array[HEIGHT*WIDTH/(BLOCK_W*BLOCK_H)]){
 	int count1 = 0, x = 0, y = 0, count2 = 0, val = 0;
@@ -471,9 +444,6 @@ void full_search(unsigned char *pre, unsigned char *cur, motionVectors mv[HEIGHT
 	}
 }
 
-
-
-
 void compare(struct motionVectors mv[HEIGHT*WIDTH/(BLOCK_H*BLOCK_W)]){
 	int count = 0;
 	for(int x=0; x<WIDTH; x+=BLOCK_W){
@@ -493,9 +463,6 @@ void compare(struct motionVectors mv[HEIGHT*WIDTH/(BLOCK_H*BLOCK_W)]){
 		} // end of loop for y 
 	} // end of loop for x
 }
-
-
-
 
 void predictFrame(unsigned char *pre, unsigned char *next, unsigned char *predictedFrame, motionVectors mv[HEIGHT*WIDTH/(BLOCK_H*BLOCK_W)]){
 	int count = 0;

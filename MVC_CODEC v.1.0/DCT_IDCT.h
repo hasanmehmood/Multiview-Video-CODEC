@@ -1,6 +1,5 @@
 
 motionVectors mv[(HEIGHT*WIDTH)/(BLOCK_H*BLOCK_W)];
-
 int my_own_round(float num);
 void dct_block(unsigned char *cur, signed char *dct_frame, int height_frame, int width_frame);
 void create_coeff();
@@ -14,6 +13,7 @@ int apply_DCT()
 	FILE *fr;
 	FILE *fw;
 	FILE *fNew;
+	
 	for(int i=0; i<BLOCK_SIZE; i++){
 		for(int j=0; j<BLOCK_SIZE; j++){
 			quantMatrix[i][j] = 30;
@@ -23,6 +23,7 @@ int apply_DCT()
 	create_coeff();
 	#pragma warning (disable : 4996);
 	fr = fopen("raw_1.yuv","rb");
+	
 	if(fr==NULL){
 		printf("Failed to open");
 		getch();
@@ -44,7 +45,6 @@ int apply_DCT()
 	unsigned char *U = (unsigned char*)malloc((HEIGHT*WIDTH>>2)*sizeof(unsigned char));
 	unsigned char *V = (unsigned char*)malloc((HEIGHT*WIDTH>>2)*sizeof(unsigned char));
 	
-
 	for(int no=0; no<(FRAMES/5); no++){
 		
 		fread(cur_frame,HEIGHT*WIDTH,sizeof(unsigned char),fr);
@@ -71,7 +71,6 @@ int apply_DCT()
 		fwrite(dct_U,(HEIGHT*WIDTH>>2),sizeof(signed char),fNew);
 		fwrite(dct_V,(HEIGHT*WIDTH>>2),sizeof(signed char),fNew);
 
-
 		for(int i=0; i<8; i++){
 			fread(mv, (HEIGHT*WIDTH)/(BLOCK_H*BLOCK_W),sizeof(struct motionVectors),fr);
 			fread(U,(HEIGHT*WIDTH>>2),sizeof(unsigned char),fr);
@@ -96,12 +95,9 @@ int apply_DCT()
 	free(cur_recon);
 	fclose(fr);
 	fclose(fNew);
-
 	getch();
 	return 0;
 }
-
-
 
 int apply_IDCT()
 {
@@ -165,7 +161,6 @@ int apply_IDCT()
 		fwrite(U,(HEIGHT*WIDTH>>2),sizeof(unsigned char),fNew);
 		fwrite(V,(HEIGHT*WIDTH>>2),sizeof(unsigned char),fNew);
 
-
 		for(int i=0; i<8; i++){
 			fread(mv, (HEIGHT*WIDTH)/(BLOCK_H*BLOCK_W),sizeof(struct motionVectors),fr);
 			fread(dct_U,(HEIGHT*WIDTH>>2),sizeof(signed char),fr);
@@ -174,11 +169,9 @@ int apply_IDCT()
 			idct_block(dct_U, U, HEIGHT/2, WIDTH/2);
 			idct_block(dct_V, V, HEIGHT/2, WIDTH/2);
 
-
 			fwrite(mv, (HEIGHT*WIDTH)/(BLOCK_H*BLOCK_W),sizeof(struct motionVectors), fNew);
 			fwrite(U,(HEIGHT*WIDTH>>2),sizeof(unsigned char),fNew);
 			fwrite(V,(HEIGHT*WIDTH>>2),sizeof(unsigned char),fNew);
-
 		}
 
 		cout<<"GOP: "<<no<<endl;
@@ -196,8 +189,6 @@ int apply_IDCT()
 	getch();
 	return 0;
 }
-
-
 
 void dct_block(unsigned char *cur, signed char *dct_frame, int height_frame, int width_frame){
 	int count1 = 0, x = 0, y = 0, count2 = 0, val = 0;
@@ -263,7 +254,6 @@ void dct_block(unsigned char *cur, signed char *dct_frame, int height_frame, int
 	}
 }
 
-
 void idct_block(signed char *cur, unsigned char *idct_frame, int height_frame, int width_frame){
 	int count1 = 0, x = 0, y = 0, count2 = 0, val = 0;
 	int least = 0;
@@ -278,7 +268,6 @@ void idct_block(signed char *cur, unsigned char *idct_frame, int height_frame, i
 			coeff_t[i][j] = coeff[j][i];
 		}
 	}
-
 
 	for(y=0; y<height_frame; y+=BLOCK_H){
 		
@@ -316,6 +305,7 @@ void idct_block(signed char *cur, unsigned char *idct_frame, int height_frame, i
 					var4 = 0;
 				}
 			}
+
 			for(int i=0; i<BLOCK_H; i++){
 
 				for(int j=0; j<BLOCK_W; j++){
@@ -325,8 +315,6 @@ void idct_block(signed char *cur, unsigned char *idct_frame, int height_frame, i
 		}
 	}
 }
-
-
 
 void create_coeff(){
 	double dct[BLOCK_SIZE][BLOCK_SIZE];
@@ -358,14 +346,13 @@ void create_coeff(){
 	
 }
 
-int my_own_round(float num){
+int my_own_round(float number){
 	int num_int = 0;
 
-	if(floor(num) > (num-0.5)){
-		return floor(num);
+	if(floor(number) > (number-0.5)){
+		return floor(number);
 	} else {
-		return ceil(num);
+		return ceil(number);
 	}
-
 	return num_int;
 }
